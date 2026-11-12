@@ -21,7 +21,7 @@ flowchart LR
 - `tailscale serve status` reported a **tailnet only** HTTPS endpoint proxying to loopback.
 - The NetBox HTTPS login page opened successfully from the Tailscale-connected laptop.
 
-Authorization policy negative testing and a deployment on a second machine **remain outstanding**; this project does not claim those tests have passed.
+A second invited Tailscale identity on macOS was used for negative connection tests: TCP/22 and TCP/443 both failed as expected. These failures are consistent with the restricted grants, though the specific packet-drop cause has not been independently confirmed. A full second-host NetBox deployment has not been tested. See the [access-validation record](docs/access-validation.md).
 
 ## Reproduce
 
@@ -41,6 +41,7 @@ NetBox HTTP is mapped exclusively to `127.0.0.1:8000`. Tailscale Serve terminate
 - [Architecture](docs/architecture.md)
 - [Threat model](docs/security.md)
 - [Live demo walkthrough](docs/demo-walkthrough.md)
+- [Observed positive and negative access tests](docs/access-validation.md)
 - [Health validation script](scripts/validate.sh)
 
 Tailscale-issued HTTPS certificates expose their hostnames in public certificate transparency logs; this does **not** make the hosted application public. The loopback Serve-to-NetBox hop is HTTP.
