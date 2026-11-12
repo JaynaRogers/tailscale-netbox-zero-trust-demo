@@ -15,7 +15,7 @@ flowchart TB
 
     subgraph OCI["Oracle Cloud · Ubuntu VM"]
       SERVE["Tailscale Serve<br/>HTTPS :443"]
-      SSH["OpenSSH<br/>TCP :22"]
+      SSH["SSH over Tailscale<br/>TCP :22"]
       BOX["NetBox Docker<br/>127.0.0.1:8000 → container :8080"]
       DATA["PostgreSQL · Valkey · Worker"]
       SERVE --> BOX --> DATA
