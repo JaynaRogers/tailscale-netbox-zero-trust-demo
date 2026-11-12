@@ -48,6 +48,8 @@ A second invited Tailscale identity on macOS was used for negative connection te
 
 ## Reproduce
 
+**Guided rebuild automation:** see [the pinned deployment runbook](docs/rebuild.md) and `scripts/rebuild.sh` (`prepare`, `deploy`, `verify`). This avoids overwriting the live installation and still requires manual secret handling, tailnet enrollment, grants, and OCI security verification. A clean-room rebuild has not yet been executed.
+
 1. Provision a Linux host with Docker Engine, Compose plugin, Git, and Tailscale. Enroll it into your tailnet. Enable HTTPS certificates in Tailscale's DNS settings.
 2. Clone upstream: `git clone -b release https://github.com/netbox-community/netbox-docker.git`. For reproducible production builds, pin a reviewed upstream tag or commit.
 3. Clone this repository separately. Copy `compose/docker-compose.override.yml` into the upstream `netbox-docker` directory as `docker-compose.override.yml`.
