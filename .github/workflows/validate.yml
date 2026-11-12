@@ -1,0 +1,34 @@
+name: Validate demo config
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  config:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check scripts
+        run: |
+          bash -n tailscale/serve.sh
+          bash -n scripts/validate.sh
+      - name: Verify localhost-only port publishing
+        run: |
+          # The project supplies an override for upstream netbox-docker,
+          # not a complete standalone Compose application.
+          # A temporary base supplies only the image missing from the overlay.
+          cat > /tmp/netbox-base.yml <<'EOF'
+          services:
+            netbox:
+              image: example.invalid/netbox:ci-placeholder
+          EOF
+          docker compose -f /tmp/netbox-base.yml -f compose/docker-compose.override.yml config --quiet
+          docker compose -f /tmp/netbox-base.yml -f compose/docker-compose.override.yml config --format json | python3 -c 'import json,sys; c=json.load(sys.stdin); p=c["services"]["netbox"]["ports"]; assert len(p)==1 and p[0]["host_ip"]=="127.0.0.1" and int(p[0]["published"])==8000 and int(p[0]["target"])==8080'
+      - name: Verify Serve, not Funnel
+        run: |
+          grep -Fq 'tailscale serve --bg --https=443' tailscale/serve.sh
+          ! grep -E '^[[:space:]]*sudo tailscale funnel' tailscale/serve.sh
