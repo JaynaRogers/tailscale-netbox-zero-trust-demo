@@ -1,0 +1,30 @@
+// Example only. Replace admin@example.com with an actual Tailscale user before applying.
+// This is a complete minimal policy for a dedicated lab tailnet.
+// Do not blindly replace an existing policy with unrelated grants/tags.
+{
+  "tagOwners": {
+    // Only tailnet administrators can assign the tag.
+    "tag:netbox-demo": [],
+  },
+  "grants": [
+    {
+      "src": ["admin@example.com"],
+      "dst": ["tag:netbox-demo"],
+      "ip": ["tcp:22", "tcp:443"],
+    },
+  ],
+  "tests": [
+    {
+      "src": "admin@example.com",
+      "proto": "tcp",
+      "accept": ["tag:netbox-demo:22", "tag:netbox-demo:443"],
+      "deny": ["tag:netbox-demo:80", "tag:netbox-demo:8000", "tag:netbox-demo:3389"],
+    },
+    // After enrolling a *real* additional identity, add a second test:
+    // {
+    //   "src": "unauthorized@example.com",
+    //   "proto": "tcp",
+    //   "deny": ["tag:netbox-demo:22", "tag:netbox-demo:443"],
+    // },
+  ],
+}
