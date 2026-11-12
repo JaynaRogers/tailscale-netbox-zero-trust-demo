@@ -1,0 +1,26 @@
+name: Validate demo config
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  config:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check scripts
+        run: |
+          bash -n tailscale/serve.sh
+          bash -n scripts/validate.sh
+      - name: Verify localhost-only port publishing
+        run: |
+          docker compose -f compose/docker-compose.override.yml config --quiet
+          grep -Fq '127.0.0.1:8000:8080' compose/docker-compose.override.yml
+      - name: Verify Serve, not Funnel
+        run: |
+          grep -Fq 'tailscale serve --bg --https=443' tailscale/serve.sh
+          ! grep -E '^[[:space:]]*sudo tailscale funnel' tailscale/serve.sh
