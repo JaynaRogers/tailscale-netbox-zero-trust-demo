@@ -9,7 +9,7 @@ The [full network diagram and traffic-flow walkthrough](docs/network-diagram.md)
 
 ```mermaid
 flowchart TB
-    WIN["Windows laptop<br/>Authorized user"]
+    WIN["Windows Laptop<br/>Authorized Tailscale Client"]
     MAC["Mac test device<br/>Second identity"]
     TS["Tailscale · identity-based grants<br/>tag:netbox-demo"]
 
