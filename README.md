@@ -4,6 +4,9 @@ This portfolio project documents a working, tailnet-only NetBox deployment on an
 
 ## Architecture
 
+The [full network diagram and traffic-flow walkthrough](docs/network-diagram.md) shows the authorized Windows laptop, unauthorized macOS test identity, Tailscale grants, SSH and HTTPS paths, Docker's loopback boundary, and NetBox backend dependencies.
+
+
 ```mermaid
 flowchart LR
   Laptop["Laptop on tailnet"] -->|"HTTPS :443"| Serve["Tailscale Serve on OCI VM"]
