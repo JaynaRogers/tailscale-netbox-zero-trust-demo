@@ -16,6 +16,13 @@ jobs:
         run: |
           bash -n tailscale/serve.sh
           bash -n scripts/validate.sh
+          bash -n scripts/rebuild.sh
+      - name: Verify rebuild is gated and pinned
+        run: |
+          grep -Fq 'UPSTREAM_TAG="5.1.1"' scripts/rebuild.sh
+          grep -Fq 'NETBOX_IMAGE="v4.7-5.1.1"' scripts/rebuild.sh
+          grep -Fq 'NETBOX_SECRETS_REVIEWED' scripts/rebuild.sh
+          grep -Fq '127.0.0.1:8000/login/' scripts/rebuild.sh
       - name: Verify localhost-only port publishing
         run: |
           # The project supplies an override for upstream netbox-docker,
