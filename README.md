@@ -8,61 +8,30 @@ The [full network diagram and traffic-flow walkthrough](docs/network-diagram.md)
 
 
 ```mermaid
-flowchart LR
-    subgraph CLIENTS["CLIENT DEVICES"]
-        direction TB
-        WIN["Windows laptop · freya<br/>Authorized identity"]
-        MAC["macOS test device<br/>Second identity"]
-        PUBLIC["Public internet<br/>Untrusted sources"]
+flowchart TB
+    WIN["Windows laptop<br/>Authorized user"]
+    MAC["Mac test device<br/>Second identity"]
+    TS["Tailscale · identity-based grants<br/>tag:netbox-demo"]
+
+    subgraph OCI["Oracle Cloud · Ubuntu VM"]
+      SERVE["Tailscale Serve<br/>HTTPS :443"]
+      SSH["OpenSSH<br/>TCP :22"]
+      BOX["NetBox Docker<br/>127.0.0.1:8000 → container :8080"]
+      DATA["PostgreSQL · Valkey · Worker"]
+      SERVE --> BOX --> DATA
     end
 
-    subgraph CONTROL["TAILSCALE ACCESS CONTROL"]
-        direction TB
-        GRANT{"Identity-based grants<br/>Destination: tag:netbox-demo"}
-        DENY["DENIED<br/>No matching grant"]
-    end
+    WIN -->|"Allowed: HTTPS 443 and SSH 22"| TS
+    MAC -.->|"Denied: no matching grant"| TS
+    TS --> SERVE
+    TS --> SSH
 
-    subgraph CLOUD["ORACLE CLOUD · UBUNTU ARM64 VM"]
-        direction TB
-        subgraph HOST["TAILSCALE + HOST SERVICES"]
-            direction TB
-            NODE["Tailscale node<br/>100.98.73.15"]
-            SERVE["Tailscale Serve<br/>TLS termination · HTTPS :443"]
-            SSH["OpenSSH server<br/>TCP :22 · SSH key required"]
-            LOOP["Host loopback only<br/>127.0.0.1:8000"]
-        end
-        subgraph DOCKER["PRIVATE DOCKER NETWORK"]
-            direction TB
-            WEB["NetBox application<br/>Container :8080"]
-            PG[("PostgreSQL")]
-            VAL[("Valkey / cache")]
-            WORKER["NetBox worker"]
-        end
-    end
-
-    WIN -->|"Allowed: HTTPS :443, SSH :22"| GRANT
-    MAC -.->|"No permission"| DENY
-    GRANT -->|"Approved traffic over encrypted tailnet"| NODE
-    NODE -->|"HTTPS :443"| SERVE
-    NODE -->|"SSH :22"| SSH
-    SERVE -->|"Local HTTP proxy"| LOOP
-    LOOP -->|"Docker port mapping"| WEB
-    WEB --> PG
-    WEB --> VAL
-    WORKER --> PG
-    WORKER --> VAL
-    PUBLIC -.->|"No inbound web or SSH rules"| BLOCKED["BLOCKED AT OCI EDGE"]
-
-    classDef client fill:#F1F4FA,stroke:#7B8BA6,color:#17263C,stroke-width:1px
-    classDef allow fill:#E5F5EF,stroke:#16815D,color:#154F3A,stroke-width:2px
-    classDef deny fill:#FDE9E8,stroke:#C84949,color:#842E2E,stroke-width:2px
-    classDef ts fill:#FFF0EB,stroke:#F46E4F,color:#522F28,stroke-width:2px
-    classDef app fill:#F0EFFB,stroke:#7772BA,color:#302C63,stroke-width:1px
-    class WIN,MAC,PUBLIC client
-    class GRANT allow
-    class DENY,BLOCKED deny
-    class NODE,SERVE ts
-    class WEB,PG,VAL,WORKER,LOOP,SSH app
+    classDef permitted fill:#E8F5ED,stroke:#2F8754,color:#184D30
+    classDef blocked fill:#FDE8E6,stroke:#D34D4D,color:#7A2525
+    classDef private fill:#FFF2EC,stroke:#F06F50,color:#573528
+    class WIN permitted
+    class MAC blocked
+    class TS,SERVE private
 ```
 
 **No public NetBox or SSH inbound ports are required after initial enrollment.** OCI firewall rules and Tailscale policy must be verified separately. Tailscale **Funnel is disabled**.
