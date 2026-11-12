@@ -4,13 +4,13 @@ This portfolio project documents a working, tailnet-only NetBox deployment on an
 
 ## Architecture
 
-The [full network diagram and traffic-flow walkthrough](docs/network-diagram.md) shows the authorized Windows laptop, unauthorized macOS test identity, Tailscale grants, SSH and HTTPS paths, Docker's loopback boundary, and NetBox backend dependencies.
+The [full network diagram and traffic-flow walkthrough](docs/network-diagram.md) shows the Windows client with NetBox access, a separate macOS tailnet member without a NetBox grant, SSH and HTTPS paths, Docker’s loopback boundary, and NetBox backend dependencies.
 
 
 ```mermaid
 flowchart TB
     WIN["Windows Laptop<br/>Authorized Tailscale Client"]
-    MAC["Mac test device<br/>Second identity"]
+    MAC["Mac Laptop<br/>Tailnet member · no NetBox grant"]
     TS["Tailscale · identity-based grants<br/>tag:netbox-demo"]
 
     subgraph OCI["Oracle Cloud · Ubuntu VM"]
@@ -22,7 +22,7 @@ flowchart TB
     end
 
     WIN -->|"Allowed: HTTPS 443 and SSH 22"| TS
-    MAC -.->|"Denied: no matching grant"| TS
+    MAC -.->|"NetBox access denied by policy"| TS
     TS --> SERVE
     TS --> SSH
 
