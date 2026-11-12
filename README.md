@@ -4,6 +4,9 @@ This portfolio project documents a working, tailnet-only NetBox deployment on an
 
 ## Architecture
 
+The [full network diagram and traffic-flow walkthrough](docs/network-diagram.md) shows the authorized Windows laptop, unauthorized macOS test identity, Tailscale grants, SSH and HTTPS paths, Docker's loopback boundary, and NetBox backend dependencies.
+
+
 ```mermaid
 flowchart LR
   Laptop["Laptop on tailnet"] -->|"HTTPS :443"| Serve["Tailscale Serve on OCI VM"]
@@ -45,6 +48,10 @@ NetBox HTTP is mapped exclusively to `127.0.0.1:8000`. Tailscale Serve terminate
 - [Health validation script](scripts/validate.sh)
 
 Tailscale-issued HTTPS certificates expose their hostnames in public certificate transparency logs; this does **not** make the hosted application public. The loopback Serve-to-NetBox hop is HTTP.
+
+## AI assistance
+
+This take-home used AI assistance for drafting, research and documentation, with live deployment and tests performed by the candidate. See [AI assistance disclosure](docs/ai-disclosure.md).
 
 ## Project boundaries
 
