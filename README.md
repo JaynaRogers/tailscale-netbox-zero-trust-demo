@@ -49,7 +49,11 @@ NetBox HTTP is mapped exclusively to `127.0.0.1:8000`. Tailscale Serve terminate
 
 Tailscale-issued HTTPS certificates expose their hostnames in public certificate transparency logs; this does **not** make the hosted application public. The loopback Serve-to-NetBox hop is HTTP.
 
-## AI assistance\n\nThis take-home used AI assistance for drafting, research and documentation, with live deployment and tests performed by the candidate. See [AI assistance disclosure](docs/ai-disclosure.md).\n\n## Project boundaries
+## AI assistance
+
+This take-home used AI assistance for drafting, research and documentation, with live deployment and tests performed by the candidate. See [AI assistance disclosure](docs/ai-disclosure.md).
+
+## Project boundaries
 
 This project contains original documentation and deployment overlays under the MIT license. NetBox and its Docker distribution remain under their own licenses. **Do not commit** NetBox `env/`, database files, API tokens, OCI credentials, Tailscale auth keys, SSH private keys, or customer data.
 
